@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AX_MAS_Settings_Header>Military Aid Scaling</AX_MAS_Settings_Header>
+  <AX_MAS_Settings_Enabled>Enable scaling</AX_MAS_Settings_Enabled>
+  <AX_MAS_Settings_Enabled_Tip>Scale manually called allied military aid to the storyteller's current dynamic raid points.</AX_MAS_Settings_Enabled_Tip>
+  <AX_MAS_Settings_FollowThreatScale>Follow current raid scale</AX_MAS_Settings_FollowThreatScale>
+  <AX_MAS_Settings_FollowThreatScale_Tip>On: target aid points = current dynamic raid points (adapts to colony wealth and progress, follows limits unlocked by other mods) × percent. Off: use a fixed factor instead.</AX_MAS_Settings_FollowThreatScale_Tip>
+  <AX_MAS_Settings_AidPercent>Support scale percent: {0}%</AX_MAS_Settings_AidPercent>
+  <AX_MAS_Settings_CustomFactor>Custom fixed factor: {0}</AX_MAS_Settings_CustomFactor>
+  <AX_MAS_Settings_FloorAtVanillaMin>Floor at vanilla minimum</AX_MAS_Settings_FloorAtVanillaMin>
+  <AX_MAS_Settings_FloorAtVanillaMin_Tip>On: aid never falls below the vanilla minimum (800 points for point-based aid; the original headcount for fixed squads), preventing extremely small aid groups.</AX_MAS_Settings_FloorAtVanillaMin_Tip>
+  <AX_MAS_Settings_DebugLogging>Debug logging</AX_MAS_Settings_DebugLogging>
+  <AX_MAS_Settings_DebugLogging_Tip>Print aid scaling details to the log on every call.</AX_MAS_Settings_DebugLogging_Tip>
+  <AX_MAS_Settings_Preview>Current raid points: {0} → target aid points: {1}</AX_MAS_Settings_Preview>
+  <AX_MAS_Settings_PreviewFixed>Fixed factor mode: target aid points = vanilla points × {0}</AX_MAS_Settings_PreviewFixed>
+  <AX_MAS_Msg_PointsScaled>Aid raid points scaled: {0} → {1}</AX_MAS_Msg_PointsScaled>
+  <AX_MAS_Msg_CountScaled>Aid headcount scaled: {0}: {1} → {2} pawns</AX_MAS_Msg_CountScaled>
+  <AX_MAS_Msg_GroupHeader>Multi-group aid: {0} groups</AX_MAS_Msg_GroupHeader>
+</LanguageData>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AX_MAS_Settings_Header>军事支援规模缩放</AX_MAS_Settings_Header>
+  <AX_MAS_Settings_Enabled>启用支援缩放</AX_MAS_Settings_Enabled>
+  <AX_MAS_Settings_Enabled_Tip>手动呼叫的友军支援规模将动态匹配叙事者当前实际会派出的袭击点数。</AX_MAS_Settings_Enabled_Tip>
+  <AX_MAS_Settings_FollowThreatScale>跟随当前袭击规模</AX_MAS_Settings_FollowThreatScale>
+  <AX_MAS_Settings_FollowThreatScale_Tip>开启：支援目标点数 = 当前动态袭击点数（随殖民地财富与阶段自适应，含其他mod解锁的上限×百分比）；关闭：使用固定系数。</AX_MAS_Settings_FollowThreatScale_Tip>
+  <AX_MAS_Settings_AidPercent>支援规模百分比：{0}%</AX_MAS_Settings_AidPercent>
+  <AX_MAS_Settings_CustomFactor>自定义固定系数：{0}</AX_MAS_Settings_CustomFactor>
+  <AX_MAS_Settings_FloorAtVanillaMin>下限钳制到原版最低值</AX_MAS_Settings_FloorAtVanillaMin>
+  <AX_MAS_Settings_FloorAtVanillaMin_Tip>开启后支援规模不会低于原版最低值（点数支援为原版下限800点；固定小队为原人数），避免极小规模支援出现。</AX_MAS_Settings_FloorAtVanillaMin_Tip>
+  <AX_MAS_Settings_DebugLogging>调试日志</AX_MAS_Settings_DebugLogging>
+  <AX_MAS_Settings_DebugLogging_Tip>每次呼叫支援时在日志中打印缩放明细。</AX_MAS_Settings_DebugLogging_Tip>
+  <AX_MAS_Settings_Preview>当前袭击点数：{0} → 本次支援目标点数：{1}</AX_MAS_Settings_Preview>
+  <AX_MAS_Settings_PreviewFixed>固定系数模式：本次支援目标点数 = 原版点数 × {0}</AX_MAS_Settings_PreviewFixed>
+  <AX_MAS_Msg_PointsScaled>已缩放本次支援的袭击点数：{0} → {1}</AX_MAS_Msg_PointsScaled>
+  <AX_MAS_Msg_CountScaled>已缩放支援人数：{0}：{1} 人 → {2} 人</AX_MAS_Msg_CountScaled>
+  <AX_MAS_Msg_GroupHeader>多组支援：共 {0} 组</AX_MAS_Msg_GroupHeader>
+</LanguageData>

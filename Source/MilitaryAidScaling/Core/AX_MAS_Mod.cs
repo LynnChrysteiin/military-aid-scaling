@@ -1,5 +1,3 @@
-using System;
-using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -10,18 +8,18 @@ namespace MilitaryAidScaling.Core
     {
         public bool enabled = true;            // 总开关
         public bool followThreatScale = true;  // true=跟随当前袭击规模；false=固定系数
-        public float aidPercent = 1f;          // 跟随模式：百分比（1 = 100%）
+        public float aidPercent = 0.2f;          // 跟随模式：百分比（1 = 100%）
         public float customFactor = 1f;        // 固定系数模式：直接给系数
-        public bool scaleBelowOne = true;      // 低于 100% 时是否对称缩小
+        public bool floorAtVanillaMin = true;  // 下限钳制到原版最低值（防极小规模支援）
         public bool debugLogging = false;      // 调试日志
 
         public override void ExposeData()
         {
             Scribe_Values.Look(ref enabled, "enabled", true);
             Scribe_Values.Look(ref followThreatScale, "followThreatScale", true);
-            Scribe_Values.Look(ref aidPercent, "aidPercent", 1f);
+            Scribe_Values.Look(ref aidPercent, "aidPercent", 0.2f);
             Scribe_Values.Look(ref customFactor, "customFactor", 1f);
-            Scribe_Values.Look(ref scaleBelowOne, "scaleBelowOne", true);
+            Scribe_Values.Look(ref floorAtVanillaMin, "floorAtVanillaMin", true);
             Scribe_Values.Look(ref debugLogging, "debugLogging", false);
             base.ExposeData();
         }
@@ -47,59 +45,80 @@ namespace MilitaryAidScaling.Core
             return "Military Aid Scaling";
         }
 
-        // 有效支援规模。
-        // 跟随模式 = difficulty.threatScale × 百分比。threatScale 是唯一真值来源：
-        // 原版难度滑条、Unlimited Threat Scale（解锁滑条上限）、Elite Raid 的袭击倍率
-        // （它直接覆写该字段）最终全部汇聚在这一个字段里——因此这里无需感知任何
-        // mod 是否在场，天然全兼容。
-        // 固定系数模式 = customFactor，不与威胁规模联动。
-        public static float EffectiveScale()
+        // 跟随模式：目标点数 = DefaultThreatPointsNow × 百分比。该函数的钳制
+        // 上限随环境（原版 10000 / Elite Raid 解锁后的 maxRaidPoint），取值即
+        // 天然跟随解锁后的上限，本 mod 不做主动钳制。
+        public static float TargetAidPoints(float basePoints, IIncidentTarget target)
         {
             if (Instance == null)
             {
-                return 1f;
+                return basePoints;
             }
             AX_MAS_ModSettings s = Instance.Settings;
-            float scale = s.followThreatScale
-                ? Find.Storyteller.difficulty.threatScale * s.aidPercent
-                : s.customFactor;
-            if (!s.scaleBelowOne && scale < 1f)
+            if (!s.followThreatScale)
             {
-                scale = 1f; // "只增不减"选项：低于 100% 时按原版规模
+                return basePoints * s.customFactor;
             }
-            return scale;
+            Map map = target as Map;
+            if (map == null || Find.Storyteller == null)
+            {
+                return basePoints * s.aidPercent;
+            }
+            return StorytellerUtility.DefaultThreatPointsNow(map) * s.aidPercent;
         }
 
-        // 敌方当前真实点数天花板，用于 points 模式钳制（保证支援永不超过敌方
-        // 可能达到的规模上限）。
-        // 原版：DefaultThreatPointsNow 里硬编码的 10000。
-        // Elite Raid 在场：它用 Transpiler 把该常量解锁为 1e7，再用自己的
-        // maxRaidPoint 设置（滑条 5000~400 万）封顶——故镜像该值。
-        // 只读探测 + 回退：mod 未装/改名/升级导致探测失败时自动退回 10000，
-        // 绝不构成硬依赖，也不会报错打扰玩家。
-        public static float CurrentEnemyPointsCeiling()
+        // 当前动态袭击点数，设置页预览用；无地图时返回 -1。
+        public static float CurrentRaidPoints()
         {
-            try
+            Map map = Find.CurrentMap;
+            if (map == null || Find.Storyteller == null)
             {
-                Type eliteRaidMod = AccessTools.TypeByName("EliteRaid.EliteRaidMod");
-                if (eliteRaidMod != null)
-                {
-                    object value = AccessTools.Field(eliteRaidMod, "maxRaidPoint")?.GetValue(null);
-                    if (value is int maxRaidPoint)
-                    {
-                        return Mathf.Max(1, maxRaidPoint);
-                    }
-                }
+                return -1f;
             }
-            catch
-            {
-                // 探测失败，走原版回退
-            }
-            return 10000f;
+            return StorytellerUtility.DefaultThreatPointsNow(map);
+        }
+
+        // 原版通讯台支援点数下界，取自原版常量。
+        public static float VanillaMinAidPoints =>
+            DiplomacyTuning.RequestedMilitaryAidPointsRange.min;
+
+        // 兼容接缝：默认原样返回，供 IfModActive 加载的兼容程序集 Postfix，
+        // 处理"一次呼叫 = 多组独立 TryExecute"的份额分摊与落点错开。
+        public static float AdjustGroupTarget(IncidentParms parms, float target)
+        {
+            return target;
+        }
+
+        // 缩放通知缝：默认逐条弹短消息；兼容层可 Prefix 返回 false 聚合为单条。
+        public static void NotifyGroupScaled(string line)
+        {
+            Messages.Message(line, MessageTypeDefOf.PositiveEvent, historical: true);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
+            // 原版设置对话框固定 900×700 且不做屏幕钳制，高 UI 缩放下底部
+            // 会被屏幕切掉；钳回屏幕内。
+            foreach (Window window in Find.WindowStack.Windows)
+            {
+                if (!(window is Dialog_ModSettings))
+                {
+                    continue;
+                }
+                float width = Mathf.Min(window.windowRect.width, UI.screenWidth - 8f);
+                float height = Mathf.Min(window.windowRect.height, UI.screenHeight - 8f);
+                if (width != window.windowRect.width || height != window.windowRect.height)
+                {
+                    window.windowRect = new Rect(
+                        ((float)UI.screenWidth - width) / 2f,
+                        ((float)UI.screenHeight - height) / 2f,
+                        width,
+                        height
+                    );
+                }
+                break;
+            }
+
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
 
@@ -124,25 +143,25 @@ namespace MilitaryAidScaling.Core
             {
                 Rect percentRect = listing.GetRect(24f);
                 Settings.aidPercent = Widgets.HorizontalSlider(
-                    percentRect, Settings.aidPercent, 0.01f, 5f, false,
+                    percentRect, Settings.aidPercent, 0.01f, 2f, false,
                     "AX_MAS_Settings_AidPercent".Translate(Mathf.RoundToInt(Settings.aidPercent * 100f)),
-                    "1%", "500%"
+                    "1%", "200%"
                 );
             }
             else
             {
                 Rect factorRect = listing.GetRect(24f);
                 Settings.customFactor = Widgets.HorizontalSlider(
-                    factorRect, Settings.customFactor, 0.01f, 100f, false,
+                    factorRect, Settings.customFactor, 0.01f, 50f, false,
                     "AX_MAS_Settings_CustomFactor".Translate(Settings.customFactor.ToString("0.00")),
-                    "0.01", "100"
+                    "0.01", "50"
                 );
             }
 
             listing.CheckboxLabeled(
-                "AX_MAS_Settings_ScaleBelowOne".Translate(),
-                ref Settings.scaleBelowOne,
-                "AX_MAS_Settings_ScaleBelowOne_Tip".Translate()
+                "AX_MAS_Settings_FloorAtVanillaMin".Translate(),
+                ref Settings.floorAtVanillaMin,
+                "AX_MAS_Settings_FloorAtVanillaMin_Tip".Translate()
             );
             listing.CheckboxLabeled(
                 "AX_MAS_Settings_DebugLogging".Translate(),
@@ -151,13 +170,31 @@ namespace MilitaryAidScaling.Core
             );
 
             listing.Gap(6f);
-            // 实时预览：当前威胁规模 → 本次呼叫将使用的有效支援规模
-            string threatScaleText = "?";
-            if (Find.Storyteller != null && Find.Storyteller.difficulty != null)
+            // 实时预览（含下限钳制）
+            if (Settings.followThreatScale)
             {
-                threatScaleText = Find.Storyteller.difficulty.threatScale.ToStringPercent();
+                float raidPoints = CurrentRaidPoints();
+                string raidText = raidPoints < 0f
+                    ? "?"
+                    : Mathf.RoundToInt(raidPoints).ToString();
+                float targetPoints = raidPoints < 0f
+                    ? -1f
+                    : raidPoints * Settings.aidPercent;
+                if (targetPoints >= 0f && Settings.floorAtVanillaMin
+                    && targetPoints < VanillaMinAidPoints)
+                {
+                    targetPoints = VanillaMinAidPoints;
+                }
+                string targetText = targetPoints < 0f
+                    ? "?"
+                    : Mathf.RoundToInt(targetPoints).ToString();
+                listing.Label("AX_MAS_Settings_Preview".Translate(raidText, targetText));
             }
-            listing.Label("AX_MAS_Settings_Preview".Translate(threatScaleText, EffectiveScale().ToStringPercent()));
+            else
+            {
+                listing.Label("AX_MAS_Settings_PreviewFixed"
+                    .Translate(Settings.customFactor.ToString("0.00")));
+            }
 
             listing.End();
             base.DoSettingsWindowContents(inRect);

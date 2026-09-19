@@ -19,6 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- 兼容子工程有独立 csproj，不编入本体 -->
+    <Compile Remove="MASCompat_AriandelLibrary/**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(RimWorldManagedDir)/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
