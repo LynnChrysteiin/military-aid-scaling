@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import
+    Project="../Local.props"
+    Condition="Exists('../Local.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+
+    <AssemblyName>MASCompat_AriandelLibrary</AssemblyName>
+    <RootNamespace>MilitaryAidScaling.Compat.Ariandel</RootNamespace>
+
+    <LangVersion>8.0</LangVersion>
+    <Nullable>disable</Nullable>
+
+    <!-- 只在米莉拉（Ariandel.AriandelLibrary）启用时由 LoadFolders 加载 -->
+    <OutputPath>../../1.6/Mods/Ariandel.AriandelLibrary/Assemblies/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(RimWorldManagedDir)/Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(RimWorldManagedDir)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <Reference Include="0Harmony">
+      <HintPath>$(HarmonyAssembliesDir)/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- 编译期引用：米莉拉改名/改结构时构建期立刻报错，而非运行时静默失效 -->
+    <Reference Include="AriandelLibrary">
+      <HintPath>$(AriandelLibraryDir)/AriandelLibrary.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 本体程序集只引用不复制（游戏从 1.6/Assemblies/ 加载本体） -->
+    <ProjectReference Include="../MilitaryAidScaling.csproj" Private="false" />
+  </ItemGroup>
+
+</Project>

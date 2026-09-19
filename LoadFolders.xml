@@ -2,5 +2,6 @@
 <loadFolders>
     <v1.6>
         <li>1.6</li>
+        <li IfModActive="Ariandel.AriandelLibrary">1.6/Mods/Ariandel.AriandelLibrary</li>
     </v1.6>
 </loadFolders>
