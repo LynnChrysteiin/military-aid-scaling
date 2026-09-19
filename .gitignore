@@ -1,0 +1,21 @@
+# ---- 系统与编辑器文件 ----
+.DS_Store
+._*
+Thumbs.db
+*.swp
+*~
+
+# ---- 构建临时产物 ----
+Source/obj/
+Source/bin/
+*.log
+*.tmp
+
+# ---- 本机配置（路径因机器而异，不入库） ----
+Source/Local.props
+
+# ---- 调试符号由源码重新生成 ----
+*.pdb
+
+# 注：1.6/Assemblies/MilitaryAidScaling.dll 为可直接加载的最终程序集，
+# 按惯例随源码入库（构建成功后自动纳入跟踪）。

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Military Aid Scaling</name>
+  <author>Astralux</author>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <description>手动呼叫的友军支援规模等比匹配当前难度的袭击规模，并支持自定义缩放因子。本Mod可与“精英化袭击”、“解锁袭击规模上限”、“显示袭击点数”等Mod兼容。</description>
+  <packageId>Astralux.MilitaryAidScaling</packageId>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>trigger.eliteRaid</li>
+    <li>unlimitedthreatscale.1trickpwnyta</li>
+    <li>visibleraidpoints.1trickpwnyta</li>
+  </loadAfter>
+</ModMetaData>
