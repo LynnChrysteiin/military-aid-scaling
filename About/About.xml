@@ -5,7 +5,7 @@
   <supportedVersions>
     <li>1.6</li>
   </supportedVersions>
-  <description>手动呼叫的友军支援规模等比匹配当前难度的袭击规模，并支持自定义缩放因子。本Mod可与“精英化袭击”、“解锁袭击规模上限”、“显示袭击点数”等Mod兼容。</description>
+  <description>手动呼叫的友军支援规模等比匹配当前难度的袭击规模，或直接固定至原版的若干倍，并支持自定义缩放因子。本Mod可与“精英化袭击”、“解锁袭击规模上限”、“显示袭击点数”等Mod兼容。</description>
   <packageId>Astralux.MilitaryAidScaling</packageId>
   <modDependencies>
     <li>
@@ -19,5 +19,6 @@
     <li>trigger.eliteRaid</li>
     <li>unlimitedthreatscale.1trickpwnyta</li>
     <li>visibleraidpoints.1trickpwnyta</li>
+    <li>Ariandel.AriandelLibrary</li>
   </loadAfter>
 </ModMetaData>
