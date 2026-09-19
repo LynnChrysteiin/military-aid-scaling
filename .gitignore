@@ -6,8 +6,8 @@ Thumbs.db
 *~
 
 # ---- 构建临时产物 ----
-Source/obj/
-Source/bin/
+obj/
+bin/
 *.log
 *.tmp
 
@@ -19,3 +19,7 @@ Source/Local.props
 
 # 注：1.6/Assemblies/MilitaryAidScaling.dll 为可直接加载的最终程序集，
 # 按惯例随源码入库（构建成功后自动纳入跟踪）。
+
+# ---- 设计文档仅本地使用，不入库 ----
+DESIGN.md
+IMPLEMENTATION.md
